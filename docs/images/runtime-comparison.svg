@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" width="100%" height="100%">
+  <title>Python Interpreter vs Compiled Binary - Size Comparison</title>
+  <desc>Simple visual showing runtime size difference between interpreted and compiled code</desc>
+  
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#0f1419"/>
+  
+  <!-- Title -->
+  <text x="700" y="50" font-size="36" font-weight="700" fill="#ffffff" text-anchor="middle">
+    What You're Actually Shipping in Docker
+  </text>
+  <text x="700" y="85" font-size="18" fill="#94a3b8" text-anchor="middle">
+    Python Interpreter vs Compiled Binary
+  </text>
+  
+  <!-- Python Side -->
+  <g id="python-side">
+    <!-- Large rectangle representing Python + NumPy -->
+    <rect x="100" y="150" width="530" height="530" rx="15" fill="#1e293b" stroke="#ef4444" stroke-width="4"/>
+    
+    <!-- Title -->
+    <text x="365" y="190" font-size="28" font-weight="700" fill="#ffffff" text-anchor="middle">
+      Python + NumPy
+    </text>
+    
+    <!-- Size -->
+    <text x="365" y="230" font-size="48" font-weight="700" fill="#ef4444" text-anchor="middle">
+      177 MB
+    </text>
+    
+    <!-- Proportional breakdown boxes (stacked vertically) -->
+    <!-- Python 3.12-slim: 119 MB = 67.2% of 400px = 269px -->
+    <rect x="120" y="260" width="490" height="269" rx="8" fill="#ef4444" opacity="0.8" stroke="#ffffff" stroke-width="2"/>
+    <text x="365" y="310" font-size="20" font-weight="600" fill="#ffffff" text-anchor="middle">
+      Python 3.12-slim: 119 MB
+    </text>
+    <text x="365" y="340" font-size="14" fill="#ffffff" text-anchor="middle">
+      python.exe (15 MB) + standard library (30 MB)
+    </text>
+    <text x="365" y="365" font-size="14" fill="#ffffff" text-anchor="middle">
+      + minimal Debian OS (74 MB)
+    </text>
+    <text x="365" y="400" font-size="16" font-weight="600" fill="#fbbf24" text-anchor="middle">
+      [!] python.exe is just an interpreter
+    </text>
+    <text x="365" y="425" font-size="15" fill="#fbbf24" text-anchor="middle">
+      It reads your .py files line-by-line
+    </text>
+    <text x="365" y="450" font-size="15" fill="#fbbf24" text-anchor="middle">
+      No compilation = SLOW (64x slower than C)
+    </text>
+    
+    <!-- NumPy package: 31 MB = 17.5% of 400px = 70px -->
+    <rect x="120" y="529" width="490" height="70" rx="8" fill="#f59e0b" opacity="0.8" stroke="#ffffff" stroke-width="2"/>
+    <text x="365" y="555" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">
+      NumPy package: 31 MB
+    </text>
+    <text x="365" y="580" font-size="13" fill="#ffffff" text-anchor="middle">
+      C extensions (11 MB) + Python code (14 MB) + utilities (6 MB)
+    </text>
+    
+    <!-- NumPy libraries: 27 MB = 15.3% of 400px = 61px -->
+    <rect x="120" y="599" width="490" height="61" rx="8" fill="#dc2626" opacity="0.8" stroke="#ffffff" stroke-width="2"/>
+    <text x="365" y="625" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">
+      NumPy libraries: 27 MB
+    </text>
+    <text x="365" y="647" font-size="13" fill="#ffffff" text-anchor="middle">
+      OpenBLAS (24 MB) + Fortran runtime (3 MB)
+    </text>
+  </g>
+  
+  <!-- Compiled Side -->
+  <g id="compiled-side">
+    <!-- Small rectangle representing compiled binary -->
+    <rect x="770" y="150" width="530" height="530" rx="15" fill="#10b981" opacity="0.9" stroke="#ffffff" stroke-width="3"/>
+    
+    <!-- Title -->
+    <text x="1035" y="190" font-size="28" font-weight="700" fill="#ffffff" text-anchor="middle">
+      Compiled Binary
+    </text>
+    
+    <!-- Size -->
+    <text x="1035" y="240" font-size="48" font-weight="700" fill="#ffffff" text-anchor="middle">
+      &lt; 1 MB
+    </text>
+    
+    <!-- Visual comparison - tiny square -->
+    <rect x="1010" y="280" width="50" height="50" rx="5" fill="#ffffff" opacity="0.9"/>
+    <text x="1035" y="365" font-size="16" fill="#ffffff" text-anchor="middle">
+      ^ Actual size (to scale)
+    </text>
+    
+    <!-- What's inside -->
+    <text x="790" y="420" font-size="18" font-weight="600" fill="#ffffff">
+      What's inside:
+    </text>
+    
+    <rect x="790" y="440" width="470" height="35" rx="5" fill="#0f1419" opacity="0.7"/>
+    <text x="800" y="463" font-size="16" fill="#ffffff">+ Your code (compiled to machine code)</text>
+    
+    <rect x="790" y="485" width="470" height="35" rx="5" fill="#0f1419" opacity="0.7"/>
+    <text x="800" y="508" font-size="16" fill="#ffffff">+ Standard library (only what you use)</text>
+    
+    <rect x="790" y="530" width="470" height="35" rx="5" fill="#0f1419" opacity="0.7"/>
+    <text x="800" y="553" font-size="16" fill="#ffffff">+ Zero runtime dependencies</text>
+    
+    <!-- The benefit -->
+    <text x="1035" y="610" font-size="20" font-weight="600" fill="#10b981" text-anchor="middle">
+      [+] The Solution
+    </text>
+    <text x="1035" y="645" font-size="16" fill="#ffffff" text-anchor="middle">
+      Ship only what you need
+    </text>
+    <text x="1035" y="675" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle">
+      177x smaller - 64x faster
+    </text>
+  </g>
+  
+  <!-- Bottom comparison -->
+  <g id="comparison-bar">
+    <rect x="100" y="730" width="1200" height="120" rx="10" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+    
+    <text x="700" y="765" font-size="22" font-weight="700" fill="#3b82f6" text-anchor="middle">
+      The Big Picture
+    </text>
+    
+    <text x="700" y="800" font-size="17" fill="#ffffff" text-anchor="middle">
+      Python is just an .exe file that interprets your code. It's 100+ MB and runs slow.
+    </text>
+    
+    <text x="700" y="830" font-size="17" fill="#10b981" text-anchor="middle">
+      Compiled languages (Rust, Go, Ruchy) convert your code to machine instructions: &lt;1 MB and FAST.
+    </text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="700" y="885" font-size="12" fill="#64748b" text-anchor="middle">
+    Languages: C (0.7 MB) - Rust (0.4 MB) - Ruchy (0.31 MB) - Go (1.4 MB) vs Python+NumPy (177 MB)
+  </text>
+</svg>

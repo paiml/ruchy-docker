@@ -1,0 +1,79 @@
+// BENCH-008: Prime Sieve (Sieve of Eratosthenes) (Ruchy)
+//
+// Find all prime numbers up to 100,000 using the Sieve of Eratosthenes algorithm.
+// Expected result: 9,592 primes
+//
+// This benchmark tests:
+// - Array allocation and manipulation
+// - Bit/boolean array operations
+// - Nested loop performance
+// - Memory access patterns (cache performance)
+// - Integer arithmetic
+
+fn sieve_of_eratosthenes(n) {
+    if n < 2 {
+        return 0
+    }
+
+    // Create boolean array "is_prime[0..n]" and initialize all entries as true
+    let mut is_prime = []
+    let mut i = 0
+    while i <= n {
+        is_prime.push(true)
+        i = i + 1
+    }
+    is_prime[0] = false
+    is_prime[1] = false
+
+    let mut p = 2
+    while p * p <= n {
+        // If is_prime[p] is not changed, then it is a prime
+        if is_prime[p] {
+            // Mark all multiples of p as not prime
+            let mut j = p * p
+            while j <= n {
+                is_prime[j] = false
+                j = j + p
+            }
+        }
+        p = p + 1
+    }
+
+    // Count primes
+    let mut count = 0
+    let mut k = 0
+    while k <= n {
+        if is_prime[k] {
+            count = count + 1
+        }
+        k = k + 1
+    }
+
+    return count
+}
+
+fn main() {
+    // Measure startup time
+    let t0 = time_micros()
+
+    let n = 100000
+
+    let t1 = time_micros()
+
+    // Compute benchmark
+    let result = sieve_of_eratosthenes(n)
+
+    let t2 = time_micros()
+
+    // Calculate times in microseconds
+    let startup_time_us = t1 - t0
+    let compute_time_us = t2 - t1
+
+    // Output standardized format
+    println(f"STARTUP_TIME_US: {startup_time_us}")
+    println(f"COMPUTE_TIME_US: {compute_time_us}")
+    println(f"RESULT: {result}")
+
+    // Validate result
+    assert(result == 9592, f"Expected 9592 primes up to 100,000, got {result}")
+}

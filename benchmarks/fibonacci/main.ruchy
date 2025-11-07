@@ -1,0 +1,55 @@
+// BENCH-007: Recursive Fibonacci (Ruchy)
+//
+// Compute fib(35) using naive recursive algorithm.
+// Expected result: 9,227,465
+//
+// This benchmark tests:
+// - Function call overhead
+// - Stack frame allocation
+// - Integer arithmetic
+// - Recursion depth handling
+
+fn fibonacci(n) {
+    if n <= 1 {
+        return n
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+fn main() {
+    // Measure startup time
+    let t0 = time_micros()
+
+    // Startup phase: allocate data structures, initialize state
+    let mut warmup = 0
+    let mut i = 0
+    while i < 100000 {
+        warmup = warmup + i
+        i = i + 1
+    }
+
+    let n = 35
+    // Use warmup to prevent optimizer elimination
+    if warmup == 0 {
+        panic("warmup failed")
+    }
+
+    let t1 = time_micros()
+
+    // Compute benchmark
+    let result = fibonacci(n)
+
+    let t2 = time_micros()
+
+    // Calculate times in microseconds
+    let startup_time_us = t1 - t0
+    let compute_time_us = t2 - t1
+
+    // Output standardized format
+    println(f"STARTUP_TIME_US: {startup_time_us}")
+    println(f"COMPUTE_TIME_US: {compute_time_us}")
+    println(f"RESULT: {result}")
+
+    // Validate result
+    assert(result == 9227465, f"Expected fib(35) = 9227465, got {result}")
+}
