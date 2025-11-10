@@ -27,6 +27,15 @@ docker build -f docker/ruchy-transpiled/fibonacci.Dockerfile -t ruchy-transpiled
 docker build -f docker/deno/fibonacci.Dockerfile -t deno:fibonacci .
 ```
 
+**PERF-002 Features** (Ruchy v3.211.0+):
+```bash
+# Show profile characteristics before compilation
+ruchy compile main.ruchy --optimize nasa --show-profile-info
+
+# Profile-Guided Optimization (25-50× speedup for CPU workloads)
+ruchy compile main.ruchy -o fibonacci --pgo
+```
+
 ### Running Benchmarks
 
 ```bash

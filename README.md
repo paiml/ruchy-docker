@@ -141,6 +141,34 @@ ruchy compile main.ruchy --optimize nasa --json metrics.json
 
 **Key Finding**: NASA/aggressive optimization provides **11.3× binary size reduction** (3.7 MB → 327 KB) with minimal performance trade-off
 
+### PERF-002: Profile Information and PGO (v3.211.0+)
+
+**Show Profile Characteristics** (`--show-profile-info`):
+```bash
+ruchy compile main.ruchy --optimize nasa --show-profile-info
+```
+
+Displays before compilation:
+- Optimization level and LTO settings
+- Expected speedup and binary size
+- Compile time estimates
+- Alternative profile suggestions
+
+**Profile-Guided Optimization** (`--pgo`):
+```bash
+ruchy compile main.ruchy -o fibonacci --pgo
+```
+
+Two-step PGO process for **25-50× speedup** on CPU-intensive workloads:
+1. Builds profiled binary (`fibonacci-profiled`)
+2. Prompts to run typical workload
+3. Builds optimized binary with profile data
+
+**PGO Benefits**:
+- Optimized for actual usage patterns (not synthetic benchmarks)
+- Native CPU instruction set targeting (`-C target-cpu=native`)
+- Profile data reusable across builds
+
 ---
 
 ## Methodology
