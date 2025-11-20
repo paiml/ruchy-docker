@@ -36,20 +36,16 @@ lto = true\n\
 codegen-units = 1\n\
 strip = true\n\
 panic = "abort"\n' > Cargo.toml && \
-    rustup target add x86_64-unknown-linux-musl && \
-    apt-get update && \
-    apt-get install -y musl-tools && \
-    rm -rf /var/lib/apt/lists/* && \
-    cargo build --release --target x86_64-unknown-linux-musl && \
-    strip target/x86_64-unknown-linux-musl/release/matrix-multiply || true
+    RUSTFLAGS="-C target-cpu=native" cargo build --release && \
+    strip target/release/matrix-multiply || true
 
 # ============================================================================
-# Stage 2: Runtime (scratch - absolute minimum)
+# Stage 2: Runtime (gcr.io/distroless for glibc)
 # ============================================================================
-FROM scratch
+FROM gcr.io/distroless/cc-debian12:latest
 
-# Copy statically-linked binary from builder
-COPY --from=builder /build/target/x86_64-unknown-linux-musl/release/matrix-multiply /matrix-multiply
+# Copy dynamically-linked binary from builder
+COPY --from=builder /build/target/release/matrix-multiply /matrix-multiply
 
 # Set binary as entrypoint
 ENTRYPOINT ["/matrix-multiply"]

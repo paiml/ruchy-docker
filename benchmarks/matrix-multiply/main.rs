@@ -15,8 +15,8 @@ fn main() {
     let mut b_data = Vec::with_capacity(size * size);
 
     for i in 0..(size * size) {
-        a_data.push((i % 100) as f64);
-        b_data.push(((i * 2) % 100) as f64);
+        a_data.push((i % 100) as f32);
+        b_data.push(((i * 2) % 100) as f32);
     }
 
     let a = Matrix::from_vec(size, size, a_data).unwrap();
@@ -34,7 +34,7 @@ fn main() {
     // Verify result (checksum to prevent optimization elimination)
     let mut sum = 0.0;
     for i in 0..(size * size) {
-        sum += c.data()[i];
+        sum += c.as_slice()[i];
     }
 
     // Standardized output format
