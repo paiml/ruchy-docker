@@ -1,0 +1,60 @@
+// Matrix Multiply Benchmark (128×128)
+// Naive O(n³) implementation (no SIMD)
+// Expected: Baseline comparable to C/Go
+
+use std::time::Instant;
+
+fn matmul(a: Vec<Vec<f64>>, b: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    let n = a.len();
+    let mut c = vec![vec![0.0; n]; n];
+
+    for i in 0..n {
+        for j in 0..n {
+            let mut sum = 0.0;
+            for k in 0..n {
+                sum += a[i][k] * b[k][j];
+            }
+            c[i][j] = sum;
+        }
+    }
+    c
+}
+
+fn main() {
+    let t0 = Instant::now();
+
+    // Initialize matrices with sequential values
+    let size = 128;
+    let mut a = vec![vec![0.0; size]; size];
+    let mut b = vec![vec![0.0; size]; size];
+
+    for i in 0..size {
+        for j in 0..size {
+            let idx = i * size + j;
+            a[i][j] = (idx % 100) as f64;
+            b[i][j] = ((idx * 2) % 100) as f64;
+        }
+    }
+
+    let t1 = Instant::now();
+    let startup_time = t1.duration_since(t0);
+
+    // Perform matrix multiplication
+    let c = matmul(a, b);
+
+    let t2 = Instant::now();
+    let compute_time = t2.duration_since(t1);
+
+    // Verify result (checksum)
+    let mut sum = 0.0;
+    for i in 0..size {
+        for j in 0..size {
+            sum += c[i][j];
+        }
+    }
+
+    // Standardized output format
+    println!("STARTUP_TIME_US: {}", startup_time.as_micros());
+    println!("COMPUTE_TIME_US: {}", compute_time.as_micros());
+    println!("RESULT: {}", sum as i64);
+}
