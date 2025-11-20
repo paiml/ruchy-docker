@@ -7,21 +7,24 @@
 # ============================================================================
 # Stage 1: Builder
 # ============================================================================
-FROM rust:1.83-slim AS builder
+FROM rustlang/rust:nightly-slim AS builder
 
 WORKDIR /build
 
-# Copy benchmark source
-COPY benchmarks/matrix-multiply/main.rs .
+# Copy trueno source from parent directory (local development version)
+COPY trueno /trueno
 
-# Configure, install dependencies (trueno), and build in one layer
+# Copy benchmark source
+COPY ruchy-docker/benchmarks/matrix-multiply/main.rs .
+
+# Configure with local trueno dependency and build
 RUN echo '[package]\n\
 name = "matrix-multiply"\n\
 version = "0.1.0"\n\
 edition = "2021"\n\
 \n\
 [dependencies]\n\
-trueno = "0.4.0"\n\
+trueno = { path = "/trueno" }\n\
 \n\
 [[bin]]\n\
 name = "matrix-multiply"\n\
