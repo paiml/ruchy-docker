@@ -52,6 +52,36 @@ docker run --rm ruchy-transpiled:fibonacci
 #         RESULT: 9227465
 ```
 
+### Debug Tracing (Integrated from renacer)
+
+The project includes structured tracing instrumentation for debugging Docker operations, container lifecycle, and benchmark parsing:
+
+```bash
+# Enable debug tracing output to stderr
+ruchy-docker --debug bench --benchmark fibonacci --language rust
+
+# Control trace verbosity with RUST_LOG
+RUST_LOG=trace ruchy-docker --debug bench --benchmark fibonacci --language rust
+RUST_LOG=debug ruchy-docker --debug bench-all
+RUST_LOG=ruchy_docker::runner=trace ruchy-docker --debug bench --benchmark primes --language go
+```
+
+**Tracing Coverage**:
+- Docker daemon connection and version check
+- Container creation, start, wait, and removal
+- Log collection and output parsing
+- Benchmark output parsing (regex extraction, field validation)
+- Statistical analysis (geometric mean, arithmetic mean, harmonic mean, outlier detection)
+
+**Log Levels**:
+- `trace`: Low-level operations (regex compilation, Docker API calls)
+- `debug`: Per-operation details (container IDs, parsed values, metrics)
+- `info`: High-level progress (Docker version, task completion)
+- `warn`: Unexpected but recoverable situations (missing images, parse failures)
+- `error`: Failures that stop execution
+
+**Integration**: This tracing infrastructure is integrated from the [renacer](https://github.com/paiml/renacer) project, using the `tracing` and `tracing-subscriber` crates with `EnvFilter` support.
+
 ### Documentation & Charts
 
 ```bash
@@ -93,6 +123,73 @@ make mutation           # ≥85% mutation score or FAIL (cargo-mutants, mutmut)
 - Cyclomatic Complexity: ≤15
 - Cognitive Complexity: ≤20
 - SATD Violations: 0
+
+### EXTREME TDD (Test-Driven Development)
+
+**Philosophy**: Write tests FIRST, then fix code. Zero tolerance for bugs.
+
+**Inspired by**: `../certeza` project testing patterns
+
+**Test Structure** (Testing Pyramid):
+```
+tests/
+├── unit_tests.rs              # Basic unit tests (~60% of tests)
+├── metrics_edge_cases.rs      # Comprehensive edge case tests
+├── analyzer_tests.rs          # Statistical analysis tests with property-based testing
+├── integration_tests.rs       # Integration tests (~30% of tests)
+└── reporter_tests.rs          # Reporter module tests
+```
+
+**Testing Approach**:
+
+1. **Unit Tests** (~60%): Test individual functions in isolation
+   - All public functions must have unit tests
+   - All error paths must be tested
+   - Edge cases: empty input, null, overflow, underflow, invalid formats
+
+2. **Property-Based Tests** (~10%): Use `proptest` to verify invariants
+   - Example: Geometric mean always between min and max
+   - Example: Arithmetic mean equals sum/n
+   - Automatically generates 100+ test cases per property
+
+3. **Integration Tests** (~30%): Test module interactions
+   - Docker container lifecycle
+   - End-to-end benchmark execution
+   - Multiple language implementations
+
+4. **Edge Case Tests**: Explicit tests for boundary conditions
+   - Zero values, negative values, very large values (u64::MAX)
+   - Overflow prevention (use `saturating_add`, `saturating_mul`)
+   - Unicode, whitespace variations, invalid input
+   - Missing required fields, malformed output
+
+**Mutation Testing**:
+```bash
+# Fast: Only test changed code (git diff)
+make mutation
+
+# Comprehensive: Test all code (10-30 minutes)
+make mutation-full
+```
+
+**Configuration**: `.cargo-mutants.toml`
+- Timeout: 120s (Docker operations are slow)
+- Excludes: `src/main.rs` (binary entry point)
+- Target: ≥85% mutation score
+
+**Coverage Reporting**:
+```bash
+# Generate HTML coverage report
+make coverage
+
+# View report
+open target/coverage/html/index.html
+```
+
+**Found Bugs via EXTREME TDD**:
+- ✅ Overflow bug in `total_time_us` calculation (fixed with `saturating_add`)
+- ✅ 30 comprehensive edge case tests added to `metrics_edge_cases.rs`
+- ✅ Property-based tests verify mathematical invariants
 
 ### Testing
 

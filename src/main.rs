@@ -1,11 +1,16 @@
 use clap::{Parser, Subcommand};
 use env_logger::Env;
 use log::info;
+use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
 #[command(name = "ruchy-docker")]
 #[command(about = "Docker Runtime Benchmarking Framework", long_about = None)]
 struct Cli {
+    /// Enable debug tracing output to stderr
+    #[arg(long)]
+    debug: bool,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -41,11 +46,27 @@ enum Commands {
     },
 }
 
-fn main() {
-    // Initialize logger
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+/// Initialize tracing subscriber for debug output (from renacer)
+fn init_tracing(debug: bool) {
+    if debug {
+        tracing_subscriber::fmt()
+            .with_env_filter(
+                EnvFilter::from_default_env().add_directive(tracing::Level::TRACE.into()),
+            )
+            .with_writer(std::io::stderr)
+            .init();
+    }
+}
 
+fn main() {
     let cli = Cli::parse();
+
+    // Initialize tracing if --debug flag is set, otherwise use env_logger
+    if cli.debug {
+        init_tracing(true);
+    } else {
+        env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    }
 
     match cli.command {
         Commands::Bench {

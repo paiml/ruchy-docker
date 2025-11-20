@@ -23,6 +23,10 @@ clap = { version = "4.4", features = ["derive"] }
 env_logger = "0.11"
 log = "0.4"
 
+# Structured tracing (from renacer)
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
 # Error handling
 anyhow = "1.0"
 thiserror = "1.0"

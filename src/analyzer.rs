@@ -1,5 +1,6 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use tracing::{debug, instrument, trace};
 
 /// Statistical analysis of benchmark results
 ///
@@ -55,15 +56,32 @@ impl AggregationMetrics {
     /// # Returns
     /// * `Ok(AggregationMetrics)` - Computed metrics
     /// * `Err(_)` - Error if values are invalid (empty, negative, etc.)
+    #[instrument(skip(values), fields(count = values.len()))]
     pub fn from_values(values: &[f64]) -> Result<Self> {
-        let geometric_mean = calculate_geometric_mean(values)?;
-        let arithmetic_mean = calculate_arithmetic_mean(values)?;
-        let harmonic_mean = calculate_harmonic_mean(values)?;
+        trace!("calculating aggregation metrics");
 
+        trace!("calculating geometric mean");
+        let geometric_mean = calculate_geometric_mean(values)?;
+        debug!(geometric_mean = %geometric_mean, "computed geometric mean");
+
+        trace!("calculating arithmetic mean");
+        let arithmetic_mean = calculate_arithmetic_mean(values)?;
+        debug!(arithmetic_mean = %arithmetic_mean, "computed arithmetic mean");
+
+        trace!("calculating harmonic mean");
+        let harmonic_mean = calculate_harmonic_mean(values)?;
+        debug!(harmonic_mean = %harmonic_mean, "computed harmonic mean");
+
+        trace!("calculating median and MAD");
         let median = calculate_median(values)?;
         let mad = calculate_mad(values, median)?;
-        let outlier_indices = detect_outliers_mad(values, 3.0);
+        debug!(median = %median, mad = %mad, "computed median and MAD");
 
+        trace!("detecting outliers");
+        let outlier_indices = detect_outliers_mad(values, 3.0);
+        debug!(outlier_count = outlier_indices.len(), "detected outliers");
+
+        trace!("aggregation metrics calculation complete");
         Ok(Self {
             geometric_mean,
             arithmetic_mean,
@@ -87,6 +105,7 @@ impl AggregationMetrics {
 /// # Returns
 /// * `Ok(f64)` - Geometric mean
 /// * `Err(_)` - Error if values are empty, contain zero/negative values
+#[instrument(skip(values), fields(count = values.len()))]
 pub fn calculate_geometric_mean(values: &[f64]) -> Result<f64> {
     if values.is_empty() {
         return Err(anyhow::anyhow!(
@@ -106,6 +125,7 @@ pub fn calculate_geometric_mean(values: &[f64]) -> Result<f64> {
 
     // Calculate product in log space to avoid overflow
     // geomean = exp((1/n) * sum(log(xi)))
+    trace!("calculating in log space to avoid overflow");
     let sum_log: f64 = values.iter().map(|x| x.ln()).sum();
     let mean_log = sum_log / values.len() as f64;
     let geometric_mean = mean_log.exp();

@@ -1,0 +1,33 @@
+# cargo-mutants configuration for ruchy-docker
+# Extreme TDD: Zero tolerance for uncaught mutants
+# Target: ≥85% mutation score (Quality Standard from CLAUDE.md)
+
+# Timeout for individual test runs (in seconds)
+# Docker operations may take longer, so we're generous
+timeout = 120
+
+# Show execution times for debugging slow tests
+show_times = true
+
+# Exclude specific mutants by regex pattern
+exclude_re = [
+    # Main binary entry point - not library code
+    "src/main.rs",
+    # Test helper functions
+    "tests/.*::setup",
+    "tests/.*::teardown",
+]
+
+# Skip entire files or modules
+exclude_globs = [
+    # Integration tests themselves don't need mutation testing
+    "tests/integration_tests.rs",
+]
+
+# Minimum survivors allowed (we want this to be 0)
+# But we'll set a threshold for CI/CD
+minimum_test_survival_rate = 15
+
+# Additional test flags for mutation testing
+# Run with fewer property-test cases to speed up mutation testing
+test_tool_args = ["--", "--test-threads=1"]

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use tracing::{debug, instrument, trace, warn};
 
 /// Represents the result of a single benchmark execution
 ///
@@ -73,12 +74,15 @@ impl BenchmarkResult {
 /// # Returns
 /// * `Ok(BenchmarkResult)` - Parsed benchmark result with all metrics
 /// * `Err(_)` - Parse error if format is invalid or required fields missing
+#[instrument(skip(output), fields(benchmark_name = %benchmark_name, language = %language, output_len = output.len()))]
 pub fn parse_benchmark_output(
     output: &str,
     benchmark_name: &str,
     language: &str,
 ) -> Result<BenchmarkResult> {
+    trace!("parsing benchmark output");
     // Compile regex patterns for extracting metrics
+    trace!("compiling regex patterns");
     let startup_re =
         Regex::new(r"STARTUP_TIME_US:\s*(\d+)").context("Failed to compile startup time regex")?;
     let compute_re =
@@ -86,28 +90,41 @@ pub fn parse_benchmark_output(
     let result_re = Regex::new(r"RESULT:\s*(-?\d+)").context("Failed to compile result regex")?;
 
     // Extract startup time (required)
+    trace!("extracting startup time");
     let startup_time_us = startup_re
         .captures(output)
         .and_then(|cap| cap.get(1))
         .and_then(|m| m.as_str().parse::<u64>().ok())
         .context("Missing or invalid STARTUP_TIME_US field")?;
+    debug!(startup_time_us = %startup_time_us, "parsed startup time");
 
     // Extract compute time (required)
+    trace!("extracting compute time");
     let compute_time_us = compute_re
         .captures(output)
         .and_then(|cap| cap.get(1))
         .and_then(|m| m.as_str().parse::<u64>().ok())
         .context("Missing or invalid COMPUTE_TIME_US field")?;
+    debug!(compute_time_us = %compute_time_us, "parsed compute time");
 
     // Extract result value (optional)
+    trace!("extracting result value");
     let result_value = result_re
         .captures(output)
         .and_then(|cap| cap.get(1))
         .and_then(|m| m.as_str().parse::<i64>().ok());
 
-    // Calculate total time
-    let total_time_us = startup_time_us + compute_time_us;
+    if let Some(val) = result_value {
+        debug!(result_value = %val, "parsed result value");
+    } else {
+        trace!("no result value found (optional field)");
+    }
 
+    // Calculate total time (use saturating_add to prevent overflow)
+    let total_time_us = startup_time_us.saturating_add(compute_time_us);
+    debug!(total_time_us = %total_time_us, "calculated total time");
+
+    trace!("benchmark output parsing complete");
     Ok(BenchmarkResult {
         benchmark_name: benchmark_name.to_string(),
         language: language.to_string(),
