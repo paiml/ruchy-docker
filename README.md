@@ -1,9 +1,49 @@
-# ruchy-docker
-## Docker Runtime Benchmarking Framework
+<p align="center">
+  <img src="docs/hero.svg" alt="ruchy-docker" width="600"/>
+</p>
+
+<h1 align="center">ruchy-docker</h1>
+
+<p align="center">Docker Runtime Benchmarking Framework</p>
 
 Scientific benchmarking of programming language performance in Docker containerized environments using instrumented measurement to isolate application performance from container overhead.
 
 **Status**: Complete - Fibonacci Benchmark with NASA Optimization Analysis
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Key Findings](#key-findings)
+- [Benchmark Results](#benchmark-results)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Features
+
+- Scientific benchmarking across 8 programming languages (C, Rust, Ruchy, Go, Deno, Python, Julia, TypeScript)
+- Instrumented measurement isolating application performance from container overhead
+- Docker image size optimization analysis
+- NASA-grade optimization presets for Ruchy
+- SIMD performance benchmarks via trueno acceleration
+- Proportional ASCII chart generation for results visualization
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/paiml/ruchy-docker.git
+cd ruchy-docker
+
+# Build the Rust benchmark harness
+cargo build --release
+
+# Build all Docker benchmark images
+make build-images
+```
+
+Prerequisites: Docker, Rust toolchain, and optionally bashrs for CLI benchmarks.
 
 ---
 
@@ -751,6 +791,17 @@ Dot Product Performance (1M elements):
 - ✅ Zero runtime dependencies
 
 ---
+
+## Contributing
+
+Contributions are welcome. Please follow these guidelines:
+
+1. Fork the repository and create your changes
+2. Ensure all tests pass: `make test`
+3. Run linting: `make lint`
+4. Submit a pull request against `main`
+
+All pull requests must pass CI quality gates before merging.
 
 ## License
 

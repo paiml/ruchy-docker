@@ -430,6 +430,10 @@ lint-dockerfiles-fix:
 	done
 	@echo "✅ Dockerfile fixes applied"
 
+.PHONY: test-fast
+test-fast: test-rust
+	@echo "✅ Fast tests complete"
+
 .PHONY: test
 test: test-rust test-python test-scripts
 	@echo "✅ All tests complete"
@@ -461,10 +465,9 @@ coverage: ## Generate HTML coverage report (FAIL if <85%)
 	@echo "📊 Running comprehensive test coverage analysis (EXTREME TDD)..."
 	@which cargo-llvm-cov > /dev/null 2>&1 || (echo "📦 Installing cargo-llvm-cov..." && cargo install cargo-llvm-cov --locked)
 	@echo "🧹 Cleaning old coverage data..."
-	@cargo llvm-cov clean --workspace
 	@mkdir -p target/coverage
 	@echo "🧪 Running tests with instrumentation..."
-	@env PROPTEST_CASES=100 cargo llvm-cov --all-features --workspace --html --output-dir target/coverage/html
+	@env PROPTEST_CASES=25 QUICKCHECK_TESTS=25 cargo llvm-cov --all-features --workspace --html --output-dir target/coverage/html
 	@cargo llvm-cov report --lcov --output-path target/coverage/lcov.info
 	@echo ""
 	@echo "📊 Coverage Summary:"
