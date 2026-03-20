@@ -14,7 +14,10 @@ async fn test_run_container_basic() {
     };
 
     // Attempt to run a simple echo container
-    let output = match runner.run_container("alpine:latest", vec!["echo", "hello"]).await {
+    let output = match runner
+        .run_container("alpine:latest", vec!["echo", "hello"])
+        .await
+    {
         Ok(out) => out,
         Err(e) => {
             eprintln!("\n⚠️  Skipping test: alpine:latest image not available or Docker timeout");
@@ -113,8 +116,11 @@ async fn test_enrich_benchmark_result() {
     };
 
     // Enrich with Docker metadata
-    match runner.enrich_with_metadata(&mut result, "alpine:latest").await {
-        Ok(_) => {},
+    match runner
+        .enrich_with_metadata(&mut result, "alpine:latest")
+        .await
+    {
+        Ok(_) => {}
         Err(e) => {
             eprintln!("\n⚠️  Skipping test: alpine:latest image not available");
             eprintln!("Error: {}", e);

@@ -156,7 +156,10 @@ impl BenchmarkRunner {
         trace_debug!("container removed");
 
         debug!("Container output: {}", output);
-        trace_info!(output_lines = output.lines().count(), "container execution complete");
+        trace_info!(
+            output_lines = output.lines().count(),
+            "container execution complete"
+        );
         Ok(output)
     }
 

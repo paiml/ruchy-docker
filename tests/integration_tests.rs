@@ -219,7 +219,9 @@ async fn test_fibonacci_python_end_to_end() {
     let output = match runner.run_container("python:fibonacci", vec![]).await {
         Ok(out) => out,
         Err(e) => {
-            eprintln!("\n⚠️  Skipping test: python:fibonacci image not available or Docker timeout");
+            eprintln!(
+                "\n⚠️  Skipping test: python:fibonacci image not available or Docker timeout"
+            );
             eprintln!("Error: {}", e);
             eprintln!("💡 Run: make build-images");
             return;
@@ -268,21 +270,25 @@ async fn test_fibonacci_comparison_report() {
         ("python:fibonacci", "python"),
     ] {
         match runner.run_container(image, vec![]).await {
-            Ok(output) => {
-                match parse_benchmark_output(&output, "fibonacci", language) {
-                    Ok(mut result) => {
-                        if let Err(e) = runner.enrich_with_metadata(&mut result, image).await {
-                            eprintln!("⚠️  Warning: Failed to enrich metadata for {}: {}", language, e);
-                        }
-                        results.push(result);
+            Ok(output) => match parse_benchmark_output(&output, "fibonacci", language) {
+                Ok(mut result) => {
+                    if let Err(e) = runner.enrich_with_metadata(&mut result, image).await {
+                        eprintln!(
+                            "⚠️  Warning: Failed to enrich metadata for {}: {}",
+                            language, e
+                        );
                     }
-                    Err(e) => {
-                        eprintln!("⚠️  Skipping {}: Failed to parse output: {}", language, e);
-                    }
+                    results.push(result);
                 }
-            }
+                Err(e) => {
+                    eprintln!("⚠️  Skipping {}: Failed to parse output: {}", language, e);
+                }
+            },
             Err(e) => {
-                eprintln!("⚠️  Skipping {}: Image {} not available or Docker timeout: {}", language, image, e);
+                eprintln!(
+                    "⚠️  Skipping {}: Image {} not available or Docker timeout: {}",
+                    language, image, e
+                );
                 eprintln!("💡 Run: make build-images");
             }
         }
@@ -297,7 +303,10 @@ async fn test_fibonacci_comparison_report() {
 
     // Need at least 2 languages for comparison
     if results.len() < 2 {
-        eprintln!("\n⚠️  Skipping test: Need at least 2 languages for comparison (got {})", results.len());
+        eprintln!(
+            "\n⚠️  Skipping test: Need at least 2 languages for comparison (got {})",
+            results.len()
+        );
         eprintln!("💡 Run: make build-images");
         return;
     }
@@ -309,8 +318,8 @@ async fn test_fibonacci_comparison_report() {
         &results[0].language
     };
 
-    let comparison = ComparisonReport::from_results(&results, baseline_lang)
-        .expect("Should create comparison");
+    let comparison =
+        ComparisonReport::from_results(&results, baseline_lang).expect("Should create comparison");
 
     println!("\n{}", comparison.to_markdown());
 
@@ -375,7 +384,10 @@ async fn test_fibonacci_ruchy_transpiled_end_to_end() {
         }
     };
 
-    let output = match runner.run_container("ruchy-transpiled:fibonacci", vec![]).await {
+    let output = match runner
+        .run_container("ruchy-transpiled:fibonacci", vec![])
+        .await
+    {
         Ok(out) => out,
         Err(e) => {
             eprintln!("\n⚠️  Skipping test: ruchy-transpiled:fibonacci image not available or Docker timeout");
@@ -421,10 +433,15 @@ async fn test_fibonacci_ruchy_compiled_end_to_end() {
         }
     };
 
-    let output = match runner.run_container("ruchy-compiled:fibonacci", vec![]).await {
+    let output = match runner
+        .run_container("ruchy-compiled:fibonacci", vec![])
+        .await
+    {
         Ok(out) => out,
         Err(e) => {
-            eprintln!("\n⚠️  Skipping test: ruchy-compiled:fibonacci image not available or broken");
+            eprintln!(
+                "\n⚠️  Skipping test: ruchy-compiled:fibonacci image not available or broken"
+            );
             eprintln!("Error: {}", e);
             eprintln!("💡 Run: make build-images");
             return;
@@ -481,21 +498,25 @@ async fn test_fibonacci_all_languages_comparison() {
         ("ruchy-compiled:fibonacci", "ruchy-compiled"),
     ] {
         match runner.run_container(image, vec![]).await {
-            Ok(output) => {
-                match parse_benchmark_output(&output, "fibonacci", language) {
-                    Ok(mut result) => {
-                        if let Err(e) = runner.enrich_with_metadata(&mut result, image).await {
-                            eprintln!("⚠️  Warning: Failed to enrich metadata for {}: {}", language, e);
-                        }
-                        results.push(result);
+            Ok(output) => match parse_benchmark_output(&output, "fibonacci", language) {
+                Ok(mut result) => {
+                    if let Err(e) = runner.enrich_with_metadata(&mut result, image).await {
+                        eprintln!(
+                            "⚠️  Warning: Failed to enrich metadata for {}: {}",
+                            language, e
+                        );
                     }
-                    Err(e) => {
-                        eprintln!("⚠️  Skipping {}: Failed to parse output: {}", language, e);
-                    }
+                    results.push(result);
                 }
-            }
+                Err(e) => {
+                    eprintln!("⚠️  Skipping {}: Failed to parse output: {}", language, e);
+                }
+            },
             Err(e) => {
-                eprintln!("⚠️  Skipping {}: Image {} not available or broken: {}", language, image, e);
+                eprintln!(
+                    "⚠️  Skipping {}: Image {} not available or broken: {}",
+                    language, image, e
+                );
                 eprintln!("💡 Run: make build-images");
             }
         }
@@ -510,7 +531,10 @@ async fn test_fibonacci_all_languages_comparison() {
 
     // Need at least 2 languages for comparison
     if results.len() < 2 {
-        eprintln!("\n⚠️  Skipping test: Need at least 2 languages for comparison (got {})", results.len());
+        eprintln!(
+            "\n⚠️  Skipping test: Need at least 2 languages for comparison (got {})",
+            results.len()
+        );
         eprintln!("💡 Run: make build-images");
         return;
     }
@@ -522,8 +546,8 @@ async fn test_fibonacci_all_languages_comparison() {
         &results[0].language
     };
 
-    let comparison = ComparisonReport::from_results(&results, baseline_lang)
-        .expect("Should create comparison");
+    let comparison =
+        ComparisonReport::from_results(&results, baseline_lang).expect("Should create comparison");
 
     println!("\n{}", comparison.to_markdown());
 
