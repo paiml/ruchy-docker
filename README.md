@@ -1,6 +1,7 @@
 <p align="center">
   <img src="docs/hero.svg" alt="ruchy-docker" width="600"/>
 </p>
+[![CI](https://github.com/paiml/ruchy-docker/actions/workflows/ci.yml/badge.svg)](https://github.com/paiml/ruchy-docker/actions/workflows/ci.yml)
 
 <h1 align="center">ruchy-docker</h1>
 
